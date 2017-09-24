@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <time.h>
+#include <stdio.h>
 using namespace std;
 
 int SUCCESS_THRESHOLD = 0;
@@ -12,6 +13,18 @@ int getRandomIndex(const vector<int>& weights) {
         int index = rand() % weights.size();
         return rand() % (SUCCESS_THRESHOLD + 1) <= weights[index] ?
             index : getRandomIndex(weights);
+}
+
+const std::string currentDateTime() {
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
 }
 
 int main(int argc, char *argv[]) {
@@ -49,7 +62,11 @@ int main(int argc, char *argv[]) {
         cout << endl;
     }
     cout << "You must get each word successfully " << SUCCESS_THRESHOLD + 1 << " times to deplete the list" << endl;;
-    cout << "Press ENTER to step through, y + ENTER if you know the word you see" << endl << endl << endl;
+    cout << "Press ENTER to step through, y + ENTER if you know the word you see" << endl;
+    string currentTime = currentDateTime();
+    ofstream outputFile;
+    outputFile.open(currentTime + ".txt");
+    cout << "Writing failures to file " << currentTime << ".txt" << endl << endl << endl;
 
     bool valid = false;
     int currentIndex;
@@ -61,6 +78,9 @@ int main(int argc, char *argv[]) {
             if (input == 'y') {
                 // Decrement the weight of the current word
                 --weights[currentIndex];
+            } else {
+                // Output the word to a file for future reference
+                outputFile << tests[currentIndex].first << " " << tests[currentIndex].second << endl;
             }
         } else {
             currentIndex = getRandomIndex(weights);
@@ -68,6 +88,8 @@ int main(int argc, char *argv[]) {
             valid = true;
         }
     }
+
+    outputFile.close();
 
     return 0;
 }
