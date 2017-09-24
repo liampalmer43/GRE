@@ -32,9 +32,11 @@ int main(int argc, char *argv[]) {
     string word;
     string definition;
     vector< pair<string, string> > tests;
+    string letters;
     srand(time(NULL));
 
     for (int i = 1; i < argc; ++i) {
+        letters.push_back(argv[i][0]);
         ifstream words(argv[i]);
 
         while(!words.eof()) {
@@ -65,8 +67,9 @@ int main(int argc, char *argv[]) {
     cout << "Press ENTER to step through, y + ENTER if you know the word you see" << endl;
     string currentTime = currentDateTime();
     ofstream outputFile;
-    outputFile.open(currentTime + ".txt");
-    cout << "Writing failures to file " << currentTime << ".txt" << endl << endl << endl;
+    string outputFileName = currentTime + "-" + letters + ".txt";
+    outputFile.open(outputFileName);
+    cout << "Writing failures to file " << outputFileName << endl << endl << endl;
 
     bool valid = false;
     int currentIndex;
